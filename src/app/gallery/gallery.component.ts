@@ -1,25 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../environment';
 
 @Component({
   selector: 'app-gallery',
   templateUrl: './gallery.component.html',
-  imports: [CommonModule, InfiniteScrollModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   standalone: true,
   styleUrls: ['./gallery.component.scss']
 })
 
 export class GalleryComponent implements OnInit {
 
+  @ViewChild('anchor', { static: false }) anchor!: ElementRef;
+
   public images: any[] = [];
   public query: string = '';
   public page: number = 1;
   public loading = false;
   public selectedImage: any = null;
+  private observer!: IntersectionObserver;
 
   /**
    * Creates an instance of GalleryComponent.
@@ -34,6 +36,29 @@ export class GalleryComponent implements OnInit {
    * @memberof GalleryComponent
    */
   ngOnInit(): void {
+  }
+
+  ngAfterViewInit() {
+    this.setupObserver();
+  }
+
+  setupObserver() {
+    this.observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && this.query) {
+        this.page++;
+        this.fetchImages();
+      }
+    });
+
+    if (this.anchor) {
+      this.observer.observe(this.anchor.nativeElement);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 
   /**
