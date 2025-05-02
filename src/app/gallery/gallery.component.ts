@@ -42,7 +42,7 @@ export class GalleryComponent implements OnInit {
     this.setupObserver();
   }
 
-  setupObserver() {
+  private setupObserver(): void {
     this.observer = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && this.query) {
         this.page++;
@@ -52,12 +52,6 @@ export class GalleryComponent implements OnInit {
 
     if (this.anchor) {
       this.observer.observe(this.anchor.nativeElement);
-    }
-  }
-
-  ngOnDestroy() {
-    if (this.observer) {
-      this.observer.disconnect();
     }
   }
 
@@ -111,6 +105,12 @@ export class GalleryComponent implements OnInit {
       this.selectedImage = image;
     } else {
       this.selectedImage = null;
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.observer) {
+      this.observer.disconnect();
     }
   }
 }
