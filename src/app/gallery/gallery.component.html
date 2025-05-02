@@ -1,0 +1,17 @@
+<div class="search-container">
+    <input type="text" placeholder="Search images..." [(ngModel)]="query" (keyup.enter)="onSearch()" />
+</div>
+
+<div class="gallery" infiniteScroll 
+     [infiniteScrollDistance]="2" 
+     [infiniteScrollThrottle]="300" 
+     (scrolled)="loadMore()">
+  <div class="image-card" *ngFor="let image of images">
+    <img [src]="image.previewURL" (click)="selectImage(image)" alt="{{image.tags}}" />
+  </div>
+</div>
+<div class="loader" *ngIf="loading">Loading...</div>
+
+<div class="modal" *ngIf="selectedImage" (click)="selectImage()">
+  <img [src]="selectedImage.largeImageURL" alt="{{selectedImage.tags}}" />
+</div>
